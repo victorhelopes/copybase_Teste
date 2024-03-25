@@ -8,7 +8,7 @@ export class AppService {
     MRR: IResponse[];
     Churn: IResponse[];
   } {
-    const MRRAux: IResponse[] = [];
+    const MRR: IResponse[] = [];
     const Churn: IResponse[] = [];
 
     lines.forEach((line) => {
@@ -22,17 +22,16 @@ export class AppService {
       if (Number(lineInfos[1]) > 30) {
         const monthlyValue = (parseFloat(value) / 12).toFixed(2);
         for (let i = 0; i < 12; i++) {
-          const index = MRRAux.findIndex(
+          const index = MRR.findIndex(
             (info) => info.label === month + '/' + year,
           );
-
           if (index === -1) {
-            MRRAux.push({
+            MRR.push({
               label: month + '/' + year,
               data: parseFloat(monthlyValue),
             });
           } else {
-            MRRAux[index].data += parseFloat(value);
+            MRR[index].data += parseFloat(value);
           }
 
           if (month >= 12) {
@@ -43,17 +42,18 @@ export class AppService {
           }
         }
       } else {
-        const index = MRRAux.findIndex(
+        const index = MRR.findIndex(
           (info) => info.label === month + '/' + year,
         );
-        if (index === -1) {
-          MRRAux.push({
-            label: month + '/' + year,
-            data: parseFloat(value),
-          });
-        } else {
-          MRRAux[index].data += parseFloat(value);
-        }
+        if (!Number.isNaN(month) || !Number.isNaN(year))
+          if (index === -1) {
+            MRR.push({
+              label: month + '/' + year,
+              data: parseFloat(value),
+            });
+          } else {
+            MRR[index].data += parseFloat(value);
+          }
       }
 
       if (lineInfos[3] === 'Cancelada') {
@@ -71,6 +71,6 @@ export class AppService {
       }
     });
 
-    return { MRR: MRRAux, Churn };
+    return { MRR: MRR, Churn };
   }
 }
